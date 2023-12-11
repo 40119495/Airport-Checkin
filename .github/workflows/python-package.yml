@@ -1,20 +1,39 @@
-name: Airport-Checkin
+name: "Airport Checkin"
 
 on:
   schedule:
-  - cron: 0 16 * * *
+    - cron: "0 22 * * *"  # scheduled at 00:01 (UTC+8) everyday
   workflow_dispatch:
+
+env:
+  RUN_ENV: 'prod'
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    # if: github.ref == 'refs/heads/master'
+
     steps:
-      - uses: actions/checkout@v3
-      - name: Install requirements
+      - name: Checkout master
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          # ref: master
+
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10.7
+
+      - name: Random sleep
+        if: github.event_name == 'schedule'
+        run: sleep $(shuf -i 10-300 -n 1)
+
+      - name: Install dependencies
         run: |
-          pip3 install -r ./requirements.txt
-      - name: Run checkin
-        run: |
-          python3 ./main.py --token_string "${{ secrets.TOKEN }}"
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run sign
         env:
           EMAIL: ${{ secrets.EMAIL }}
           PASSWORD: ${{ secrets.PASSWORD }}
@@ -22,4 +41,5 @@ jobs:
           SCKEY: ${{ secrets.SCKEY }}
           TGBOT: ${{ secrets.TGBOT }}
           TGUSERID: ${{ secrets.TGUSERID }}
-      - uses: gautamkrishnar/keepalive-workflow@master
+        run: |
+          python3 ./main.py
