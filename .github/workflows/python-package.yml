@@ -20,4 +20,6 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
           BASE_URL: ${{ secrets.BASE_URL }}
           SCKEY: ${{ secrets.SCKEY }}
+          TGBOT: ${{ secrets.TGBOT }}
+          TGUSERID: ${{ secrets.TGUSERID }}
       - uses: gautamkrishnar/keepalive-workflow@master
